@@ -5,15 +5,53 @@
 var mongoose = require('mongoose');
 var config = require('../config');
 
-mongoose.connect(config.database);
+//mongoose.connect(config.database);
 
 /* instantiate your models here
 
 */
 
-// GET /api
 exports.api = function(req, res) {
-    res.json({ message: 'coupletones-server' + ' v' + (require('../package').version)});
+    res.json({
+        message: 'coupletones-server' + ' v' + (require('../package').version),
+        users: global.cache
+    });
 };
 
-// ...
+exports.getUserId = function(req, res) {
+    console.log(req.query);
+    if (req.query.username && req.query.username.length > 0) {
+        if (global.cache[req.query.username]) {
+            res.json({
+                ID: global.cache[req.query.username],
+                result: 'OK'
+            });
+        } else {
+            res.status(404).json({
+                message: 'Not Found',
+                result: 'KO'
+            });
+        }
+
+    } else {
+        res.status(400).json({
+            message: 'Invalid parameter !',
+            result: 'KO'
+        });
+    }
+};
+
+exports.registerUser = function(req, res) {
+    if (req.body.username && req.body.username.length > 0 &&
+    req.body.regid && req.body.regid.length > 0) {
+        global.cache[req.body.username] = req.body.regid;
+        res.json({
+            result: 'OK'
+        });
+    } else {
+        res.status(400).json({
+            message: 'Invalid parameter !',
+            result: 'KO'
+        });
+    }
+};

@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "main": "server.js",
   "dependencies": {
+    "body-parser": "^1.15.1",
     "express": "^4.13.3",
-    "mongoose": "^4.2.8",
     "kerberos": "^0.0.17",
+    "mongoose": "^4.2.8",
     "morgan": "^1.6.1"
   },
   "devDependencies": {

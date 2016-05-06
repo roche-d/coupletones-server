@@ -6,21 +6,28 @@ var express = require('express');
 var morgan = require('morgan');
 var app = express();
 var config = require('./config');
+var bodyParser = require('body-parser');
+
+global.cache = {};
 
 // use morgan to log request to the console
 app.use(morgan('dev'));
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 
 var controller = require('./controllers/api'); // API controller
-var routes = express.Router();
+//var routes = express.Router();
 
-routes.route('/').get(controller.api);
-
+app
+    .get('/apiversion', controller.api)
+    .get('/partner', controller.getUserId)
+    .post('/register', controller.registerUser);
 /* add your routes here
 
 */
 
 // initialize routes with the /api prefix
-app.use('/api', routes);
+//app.use('/api', routes);
 
 // catch 404 status code
 app.get('*', function(req, res){
