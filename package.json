@@ -1,0 +1,19 @@
+{
+  "name": "coupletones-server",
+  "version": "0.0.0",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.13.3",
+    "mongoose": "^4.2.8",
+    "kerberos": "^0.0.17",
+    "morgan": "^1.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "1.3.7"
+  },
+  "scripts": {
+    "start": "NODE_ENV=production node --harmony server.js",
+    "dev": "NODE_ENV=development node --debug --harmony server.js",
+    "local": "NODE_ENV=local nodemon --debug --harmony server.js"
+  }
+}
