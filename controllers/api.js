@@ -4,6 +4,7 @@
 
 var mongoose = require('mongoose');
 var config = require('../config');
+var gcmcontroller = require('./gcm');
 
 //mongoose.connect(config.database);
 
@@ -32,7 +33,6 @@ exports.getUserId = function(req, res) {
                 result: 'KO'
             });
         }
-
     } else {
         res.status(400).json({
             message: 'Invalid parameter !',
@@ -48,6 +48,7 @@ exports.registerUser = function(req, res) {
         res.json({
             result: 'OK'
         });
+        gcmcontroller.sendMessage(req.body.regid ,'Thanks for registering ' + req.body.username)
     } else {
         res.status(400).json({
             message: 'Invalid parameter !',
