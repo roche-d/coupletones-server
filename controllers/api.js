@@ -56,3 +56,25 @@ exports.registerUser = function(req, res) {
         });
     }
 };
+
+exports.sendToUser = function(req, res) {
+  if (req.body.username && req.body.username.length > 0
+      && req.body.message) {
+      if (global.cache[req.body.username]) {
+          gcmcontroller.sendMessage(global.cache[req.body.username], req.body.message);
+          res.json({
+              result: 'OK'
+          });
+      } else {
+          res.status(404).json({
+              message: 'Not Found',
+              result: 'KO'
+          });
+      }
+  } else {
+      res.status(400).json({
+          message: 'Invalid parameter !',
+          result: 'KO'
+      });
+  }
+};

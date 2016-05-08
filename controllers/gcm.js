@@ -6,7 +6,6 @@ var config = require('../config');
 var gcm = require('node-gcm');
 
 exports.sendMessage = function(regid, msg) {
-  // APA91bG7OGbMnGCvW7rg_kgBpqSaTiDelBBHom0tAlvgx1nSzw1DJvOvPPN3XfPyHhP7PEthNSRdbetslcaoIHSaX3mp4rTCAFVyFqXK9a_RNobc8UMER5U4D0F-p1S9HvfoDRiB-fnI
 
     var message = new gcm.Message();
 

@@ -21,7 +21,8 @@ var controller = require('./controllers/api'); // API controller
 app
     .get('/apiversion', controller.api)
     .get('/partner', controller.getUserId)
-    .post('/register', controller.registerUser);
+    .post('/register', controller.registerUser)
+    .post('/send', controller.sendToUser);
 /* add your routes here
 
 */
