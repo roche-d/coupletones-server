@@ -5,8 +5,9 @@
 var mongoose = require('mongoose');
 var config = require('../config');
 var gcmcontroller = require('./gcm');
+var LocationModel = require('../models/locationModel');
 
-//mongoose.connect(config.database);
+mongoose.connect(config.database);
 
 /* instantiate your models here
 
@@ -77,4 +78,76 @@ exports.sendToUser = function(req, res) {
           result: 'KO'
       });
   }
+};
+
+exports.updateFavoriteLocationList = function(req, res) {
+    if (req.body.username && req.body.username.length > 0 && req.body.locations) {
+        if (global.cache[req.body.username]) {
+            try {
+                LocationModel.remove({Username: req.body.username}, function(err) {
+                    if (err) throw err;
+                    console.log('deleted one');
+                });
+
+                (req.body.locations || []).forEach(function (e) {
+                    var model = LocationModel({
+                        Name: e.name,
+                        Username: req.body.username,
+                        Lat: e.lat,
+                        Lng: e.lng
+                    });
+
+                    model.save(function (err) {
+                        if (err) throw err;
+
+                        console.log('saved');
+                    });
+
+                });
+                //console.log(locations);
+                res.json({
+                    result: 'OK'
+                });
+            } catch (err) {
+                res.status(500).json({
+                    message: 'An error occurred',
+                    result: 'KO'
+                });
+            }
+            
+        } else {
+            res.status(404).json({
+                message: 'User not found',
+                result: 'KO'
+            });
+        }
+    } else {
+        res.status(400).json({
+            message: 'Invalid parameter !',
+            result: 'KO'
+        });
+    }
+};
+
+exports.getFavoriteLocationList = function(req, res) {
+    if (req.query.username && req.query.username.length > 0) {
+        LocationModel.find({Username: req.query.username}, function (err, result) {
+            var result = result || [];
+            res.json({
+                locations: result.map(function (e) {
+                    return {
+                        name: e.Name,
+                        lat: e.Lat,
+                        lng: e.Lng
+                    };
+                }),
+                result: 'OK'
+            });
+        });
+    } else {
+        res.status(400).json({
+            message: 'Invalid parameter !',
+            result: 'KO'
+        });
+    }
 };
