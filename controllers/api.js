@@ -69,6 +69,7 @@ exports.registerUser = function(req, res) {
                         LastConnection: new Date()
                     });
                     user = model;
+                    gcmcontroller.sendMessage(req.body.regid ,'Thanks for registering ' + req.body.username);
                 }
                 user.save(function (err) {
                     if (err) throw err;
@@ -76,7 +77,6 @@ exports.registerUser = function(req, res) {
                 res.json({
                     result: 'OK'
                 });
-                gcmcontroller.sendMessage(req.body.regid ,'Thanks for registering ' + req.body.username)
             });
         } catch (err) {
             res.status(500).json({
