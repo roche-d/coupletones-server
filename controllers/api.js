@@ -15,9 +15,20 @@ mongoose.connect(config.database);
  */
 
 exports.api = function(req, res) {
-    res.json({
-        message: 'coupletones-server' + ' v' + (require('../package').version),
-        users: global.cache
+    UserModel.find({}, function (err, users) {
+        var userlist = [];
+        if (users && users.length > 0) {
+            userlist = users.map(function (e) {
+               return {
+                   'Name': e.Name,
+                   'LastConnection': e.LastConnection
+               };
+            });
+        }
+        res.json({
+            message: 'coupletones-server' + ' v' + (require('../package').version),
+            users: userlist
+        });
     });
 };
 
