@@ -9,7 +9,8 @@ var notificationSchema = new Schema({
     From: String,
     To: String,
     LocationId: String,
-    Timestamp: Date
+    Timestamp: Date,
+    Status: {type: String, enum: ['SENT', 'NSENT']}
 });
 
 module.exports = mongoose.model('Notification', notificationSchema);

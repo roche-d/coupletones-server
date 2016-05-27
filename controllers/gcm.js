@@ -5,7 +5,7 @@
 var config = require('../config');
 var gcm = require('node-gcm');
 
-exports.sendMessage = function(regid, msg) {
+exports.sendMessage = function(regid, msg, cb) {
 
     var message = new gcm.Message();
 
@@ -18,7 +18,11 @@ exports.sendMessage = function(regid, msg) {
 
 // Now the sender can be used to send messages
     sender.send(message, { registrationTokens: regTokens }, function (err, response) {
-        if(err) console.error(err);
-        else    console.log(response);
+        var status = true;
+        if(err) {
+            console.error(err);
+            status = false;
+        } else    console.log(response);
+        if (cb) cb(status);
     });
 };

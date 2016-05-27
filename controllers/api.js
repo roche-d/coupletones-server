@@ -7,6 +7,7 @@ var config = require('../config');
 var gcmcontroller = require('./gcm');
 var LocationModel = require('../models/locationModel');
 var UserModel = require('../models/userModel');
+var NotificationModel = require('../models/notificationModel');
 
 mongoose.connect(config.database);
 
@@ -111,9 +112,20 @@ exports.sendToUser = function(req, res) {
                 if (err) throw err;
 
                 if (user) {
-                    gcmcontroller.sendMessage(user.RegId, req.body.message);
-                    res.json({
-                        result: 'OK'
+                    gcmcontroller.sendMessage(user.RegId, req.body.message, function (ok) {
+                        var model = NotificationModel({
+                            From: '',
+                            To: user.Name,
+                            LocationId: '',
+                            Timestamp: new Date(),
+                            Status: ok ? 'SENT' : 'NSENT'
+                        });
+                        model.save(function (err) {
+                            if (err) console.log(err);
+                        });
+                        res.json({
+                            result: ok ? 'OK' : 'KO'
+                        });
                     });
                 } else {
                     res.status(404).json({
