@@ -5,12 +5,7 @@
 var config = require('../config');
 var gcm = require('node-gcm');
 
-exports.sendMessage = function(regid, msg, cb) {
-
-    var message = new gcm.Message();
-
-    message.addData('message', msg);
-
+function sendToGCM(regid, message, cb) {
     var regTokens = [regid];
 
 // Set up the sender with you API key
@@ -23,6 +18,31 @@ exports.sendMessage = function(regid, msg, cb) {
             console.error(err);
             status = false;
         } else    console.log(response);
+        if (response && response.failure > 0) status = false;
         if (cb) cb(status);
     });
+}
+
+exports.sendMessage = function (regid, msg, cb) {
+    var message = new gcm.Message();
+    message.addData('message', msg);
+    message.addData('type', 'notification');
+
+    sendToGCM(regid, message, cb);
+};
+
+exports.sendPartnerRequest = function (regid, partner, cb) {
+    var message = new gcm.Message();
+    message.addData('message', partner);
+    message.addData('type', 'partner_request');
+
+    sendToGCM(regid, message, cb);
+};
+
+exports.sendPartnerConfirmation = function (regid, partner, cb) {
+    var message = new gcm.Message();
+    message.addData('message', partner);
+    message.addData('type', 'partner_confirmation');
+
+    sendToGCM(regid, message, cb);
 };

@@ -74,6 +74,7 @@ exports.registerUser = function(req, res) {
 
                 if (user) {
                     user.LastConnection = new Date();
+                    user.RegId = req.body.regid;
                 } else {
                     var model = UserModel({
                         Name: req.body.username,
@@ -89,6 +90,110 @@ exports.registerUser = function(req, res) {
                 res.json({
                     result: 'OK'
                 });
+            });
+        } catch (err) {
+            res.status(500).json({
+                message: 'An error occurred',
+                result: 'KO'
+            });
+        }
+    } else {
+        res.status(400).json({
+            message: 'Invalid parameter !',
+            result: 'KO'
+        });
+    }
+};
+
+exports.registerPartner = function (req, res) {
+    if (req.body.username && req.body.username.length > 0 &&
+        req.body.partner && req.body.partner.length > 0) {
+        try {
+            UserModel.findOne({Name: req.body.username}, function(err, user) {
+                if (err) throw err;
+                
+                if (user) {
+                    UserModel.findOne({Name: req.body.partner}, function(err, partner) {
+                        if (err) throw err;
+
+                        if (partner) {
+                            gcmcontroller.sendPartnerConfirmation(partner.RegId, user.Name, function (ok) {
+                               if (ok) {
+                                   user.Partner = partner.Name;
+                                   user.save();
+                                   partner.Partner = user.Name;
+                                   partner.save();
+                                   res.json({result: 'OK'});
+                               } else {
+                                   res.status(500).json({
+                                       message: 'Impossible to communicate with the partner !',
+                                       result: 'KO'
+                                   });
+                               }
+                            });
+                        } else {
+                            res.status(404).json({
+                                message: 'Partner Not Found',
+                                result: 'KO'
+                            });
+                        }
+                    });
+                } else {
+                    res.status(404).json({
+                        message: 'User Not Found',
+                        result: 'KO'
+                    });
+                }
+            });
+        } catch (err) {
+            res.status(500).json({
+                message: 'An error occurred',
+                result: 'KO'
+            });
+        }
+    } else {
+        res.status(400).json({
+            message: 'Invalid parameter !',
+            result: 'KO'
+        });
+    }
+};
+
+exports.requestPartner = function (req, res) {
+    if (req.body.username && req.body.username.length > 0 &&
+        req.body.partner && req.body.partner.length > 0) {
+        try {
+            UserModel.findOne({Name: req.body.username}, function(err, ruser) {
+                if (err) throw err;
+
+                if (ruser) {
+                    UserModel.findOne({Name: req.body.partner}, function(err, user) {
+                        if (err) throw err;
+
+                        if (user) {
+                            gcmcontroller.sendPartnerRequest(user.RegId, req.body.username, function (ok) {
+                                if (ok) {
+                                    res.json({result: 'OK'});
+                                } else {
+                                    res.status(500).json({
+                                        message: 'Impossible to send the request to the partner !',
+                                        result: 'KO'
+                                    });
+                                }
+                            });
+                        } else {
+                            res.status(404).json({
+                                message: 'Partner Not Found',
+                                result: 'KO'
+                            });
+                        }
+                    });
+                } else {
+                    res.status(404).json({
+                        message: 'User Not Found',
+                        result: 'KO'
+                    });
+                }
             });
         } catch (err) {
             res.status(500).json({
@@ -165,7 +270,8 @@ exports.updateFavoriteLocationList = function(req, res) {
                             Name: e.name,
                             Username: req.body.username,
                             Lat: e.lat,
-                            Lng: e.lng
+                            Lng: e.lng,
+                            Address: e.address
                         });
 
                         model.save(function (err) {
@@ -204,9 +310,11 @@ exports.getFavoriteLocationList = function(req, res) {
             res.json({
                 locations: result.map(function (e) {
                     return {
+                        id: e._id,
                         name: e.Name,
                         lat: e.Lat,
-                        lng: e.Lng
+                        lng: e.Lng,
+                        address: e.Address
                     };
                 }),
                 result: 'OK'

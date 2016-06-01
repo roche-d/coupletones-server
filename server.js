@@ -16,7 +16,6 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var controller = require('./controllers/api'); // API controller
-//var routes = express.Router();
 
 app
     .get('/apiversion', controller.api)
@@ -24,13 +23,9 @@ app
     .post('/register', controller.registerUser)
     .post('/send', controller.sendToUser)
     .post('/updatelocations', controller.updateFavoriteLocationList)
-    .get('/locations', controller.getFavoriteLocationList);
-/* add your routes here
-
-*/
-
-// initialize routes with the /api prefix
-//app.use('/api', routes);
+    .get('/locations', controller.getFavoriteLocationList)
+    .post('/partnerRequest', controller.requestPartner)
+    .post('/partnerConfirm', controller.registerPartner);
 
 // catch 404 status code
 app.get('*', function(req, res){

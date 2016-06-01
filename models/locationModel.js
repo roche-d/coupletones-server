@@ -9,6 +9,7 @@ var locationSchema = new Schema({
     //_id: Number,
     Name: String,
     Username: String,
+    Address: String,
     Lat: String,
     Lng: String
 });

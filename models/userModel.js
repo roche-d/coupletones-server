@@ -8,7 +8,8 @@ var Schema = mongoose.Schema;
 var userSchema = new Schema({
     Name: String,
     RegId: String,
-    LastConnection: Date
+    LastConnection: Date,
+    Partner: String
 });
 
 module.exports = mongoose.model('User', userSchema);
