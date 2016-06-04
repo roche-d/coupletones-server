@@ -221,7 +221,7 @@ exports.sendToUser = function(req, res) {
                         var model = NotificationModel({
                             From: '',
                             To: user.Name,
-                            LocationId: '',
+                            LocationId: req.body.ID ? req.body.ID : '',
                             Timestamp: new Date(),
                             Status: ok ? 'SENT' : 'NSENT'
                         });
@@ -231,7 +231,7 @@ exports.sendToUser = function(req, res) {
                         res.json({
                             result: ok ? 'OK' : 'KO'
                         });
-                    });
+                    }, req.body.ID);
                 } else {
                     res.status(404).json({
                         message: 'Not Found',

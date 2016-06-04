@@ -23,11 +23,12 @@ function sendToGCM(regid, message, cb) {
     });
 }
 
-exports.sendMessage = function (regid, msg, cb) {
+exports.sendMessage = function (regid, msg, cb, id) {
     var message = new gcm.Message();
     message.addData('message', msg);
     message.addData('type', 'notification');
-
+    if (id) message.addData('ID', id);
+    
     sendToGCM(regid, message, cb);
 };
 
