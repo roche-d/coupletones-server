@@ -359,7 +359,7 @@ exports.getNotificationList = function(req, res) {
                             notifications.push({
                                 ID: e.LocationId,
                                 Date: e.Timestamp,
-                                LocationName: (err) ? '' : location.Name
+                                LocationName: (err || !location) ? 'Unknown' : location.Name
                             });
                             if (i == result.length - 1) {
                                 res.json({
