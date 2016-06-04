@@ -25,7 +25,8 @@ app
     .post('/updatelocations', controller.updateFavoriteLocationList)
     .get('/locations', controller.getFavoriteLocationList)
     .post('/partnerRequest', controller.requestPartner)
-    .post('/partnerConfirm', controller.registerPartner);
+    .post('/partnerConfirm', controller.registerPartner)
+    .get('/notifications', controller.getNotificationList);
 
 // catch 404 status code
 app.get('*', function(req, res){

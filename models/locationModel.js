@@ -14,4 +14,5 @@ var locationSchema = new Schema({
     Lng: String
 });
 
-module.exports = mongoose.model('Location', locationSchema);
+module.exports.Model = mongoose.model('Location', locationSchema);
+module.exports.Schema = locationSchema;

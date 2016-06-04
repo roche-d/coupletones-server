@@ -5,7 +5,7 @@
 var mongoose = require('mongoose');
 var config = require('../config');
 var gcmcontroller = require('./gcm');
-var LocationModel = require('../models/locationModel');
+var LocationModel = require('../models/locationModel').Model;
 var UserModel = require('../models/userModel');
 var NotificationModel = require('../models/notificationModel');
 
@@ -225,9 +225,20 @@ exports.sendToUser = function(req, res) {
                             Timestamp: new Date(),
                             Status: ok ? 'SENT' : 'NSENT'
                         });
-                        model.save(function (err) {
-                            if (err) console.log(err);
-                        });
+                        if (req.body.ID) {
+                            LocationModel.findOne({_id: req.body.ID}, function (err, location) {
+                                if (!err) {
+                                    model.Location = location;
+                                }
+                                model.save(function (err) {
+                                    if (err) console.log(err);
+                                });
+                            });
+                        } else {
+                            model.save(function (err) {
+                                if (err) console.log(err);
+                            });
+                        }
                         res.json({
                             result: ok ? 'OK' : 'KO'
                         });
@@ -323,6 +334,53 @@ exports.getFavoriteLocationList = function(req, res) {
     } else {
         res.status(400).json({
             message: 'Invalid parameter !',
+            result: 'KO'
+        });
+    }
+};
+
+exports.getNotificationList = function(req, res) {
+    try {
+        if (req.query.username && req.query.username.length > 0) {
+            NotificationModel.find({To: req.query.username, Timestamp: {$gte: new Date(new Date().setDate(new Date().getDate()-1))}}, function (err, result) {
+                if (err) throw err;
+                if (!result || result.length < 1) {
+                    res.json({
+                        notifications: [],
+                        result: 'OK'
+                    });
+                    return;
+                }
+                var notifications = [];
+                result.forEach(function (e, i) {
+                    if (e.LocationId) {
+                        LocationModel.findOne({_id: e.LocationId}, function (err, location) {
+                            if (err) console.log(err);
+                            notifications.push({
+                                ID: e.LocationId,
+                                Date: e.Timestamp,
+                                LocationName: (err) ? '' : location.Name
+                            });
+                            if (i == result.length - 1) {
+                                res.json({
+                                    notifications: notifications,
+                                    result: 'OK'
+                                });
+                            }
+                        });
+                    } else if (i == result.length - 1) {
+                        res.json({
+                            notifications: notifications,
+                            result: 'OK'
+                        });
+                    }
+
+                });
+            });
+        }
+    } catch (err) {
+        res.status(500).json({
+            message: 'An error occurred',
             result: 'KO'
         });
     }
